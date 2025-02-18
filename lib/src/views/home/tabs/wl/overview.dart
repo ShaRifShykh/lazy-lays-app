@@ -1,0 +1,360 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:starter_app/generated/assets.dart';
+import 'package:starter_app/src/shared/spacing.dart';
+import 'package:starter_app/src/styles/app_colors.dart';
+import 'package:starter_app/src/styles/text_theme.dart';
+import 'package:starter_app/src/views/home/home_view_model.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+
+class Overview extends StatelessWidget {
+  const Overview({Key? key, required this.model}) : super(key: key);
+  final HomeViewModel model;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(
+          horizontal: 20.w,
+          vertical: 10.h,
+        ),
+        child: Column(
+          children: [
+            // Placeholder(),
+            ProfileCard(),
+            VerticalSpacing(20.h),
+            Container(
+              height: 440.h,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: AppColors.appDarkGreen, width: 1),
+              ),
+              padding: EdgeInsets.all(16.w),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Bet Performance',
+                            style: TextStyling.bold.copyWith(
+                              fontSize: 20.sp,
+                            ),
+                          ),
+                          Text(
+                            'January 31st, 2014- Feb 4, 2024',
+                            style: TextStyling.regular.copyWith(
+                              fontSize: 11.sp,
+                              color: AppColors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      InkWell(
+                        onTap: () {},
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 5.h,
+                            horizontal: 5.w,
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Weekly',
+                                style: TextStyling.regular.copyWith(
+                                  fontSize: 11.sp,
+                                  color: AppColors.grey,
+                                ),
+                              ),
+                              HorizontalSpacing(4.w),
+                              Icon(
+                                FontAwesomeIcons.filter,
+                                color: AppColors.grey,
+                                size: 11.sp,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    flex: 5,
+                    child: Container(
+                      child: SfCartesianChart(
+                        primaryXAxis: CategoryAxis(
+                          axisLine: AxisLine(
+                            color: AppColors.grey,
+                          ),
+                          majorGridLines: MajorGridLines(
+                            color: Colors.transparent,
+                          ),
+                        ),
+                        primaryYAxis: NumericAxis(
+                          axisLine: AxisLine(
+                            color: AppColors.grey,
+                          ),
+                          majorGridLines: MajorGridLines(
+                            color: AppColors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                        // axes: [
+                        //   // NumericAxis(
+                        //   //   majorGridLines: MajorGridLines(
+                        //   //     color: AppColors.grey,
+                        //   //   ),
+                        //   // ),
+                        // ],
+                        plotAreaBorderColor: Colors.transparent,
+                        series: <CartesianSeries>[
+                          SplineSeries<ChartData, String>(
+                            color: AppColors.appPink,
+                            enableTooltip: true,
+                            dataSource: model.chartData,
+                            // Type of spline
+                            splineType: SplineType.natural,
+                            dataLabelMapper: (datum, index) =>
+                                datum.y.toString(),
+                            cardinalSplineTension: 0.9,
+                            xValueMapper: (ChartData data, _) => data.x,
+                            yValueMapper: (ChartData data, _) => data.y,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  VerticalSpacing(10.h),
+                  Expanded(
+                    flex: 4,
+                    child: Container(
+                      child: Column(
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: OverviewInfoWidget(
+                                  title: 'Profit',
+                                  value: '+114',
+                                ),
+                              ),
+                              HorizontalSpacing(24.w),
+                              Expanded(
+                                child: OverviewInfoWidget(
+                                  title: 'Wager',
+                                  value: '-',
+                                ),
+                              ),
+                            ],
+                          ),
+                          VerticalSpacing(15.h),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: OverviewInfoWidget(
+                                  title: 'Wins',
+                                  value: '3',
+                                ),
+                              ),
+                              HorizontalSpacing(24.w),
+                              Expanded(
+                                child: OverviewInfoWidget(
+                                  title: 'ROI',
+                                  value: '+123.99',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class OverviewInfoWidget extends StatelessWidget {
+  const OverviewInfoWidget({
+    Key? key,
+    required this.title,
+    required this.value,
+  }) : super(key: key);
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 65.h,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: AppColors.appDarkGreen,
+        ),
+        borderRadius: BorderRadius.circular(18.r),
+      ),
+      padding: EdgeInsets.all(8.w),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyling.medium.copyWith(
+              fontSize: 14.sp,
+              color: AppColors.grey,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyling.medium.copyWith(
+              fontSize: 14.sp,
+              color: AppColors.appLightGreen,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ProfileCard extends StatelessWidget {
+  const ProfileCard({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200.h,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24.r),
+        border: Border.all(color: AppColors.appDarkGreen, width: 1),
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: 16.w,
+        vertical: 8.w,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 52.h,
+            width: 52.h,
+            child: CircleAvatar(
+              backgroundImage: Image.asset(AssetImages.user).image,
+            ),
+          ),
+          VerticalSpacing(10.h),
+          Text(
+            'User name',
+            style: TextStyling.semiBold.copyWith(),
+          ),
+          VerticalSpacing(10.h),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 55.h,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.onboardingBgGradient,
+                    borderRadius: BorderRadius.circular(6.r),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Total Bets',
+                        style: TextStyling.medium.copyWith(
+                          fontSize: 10.sp,
+                        ),
+                      ),
+                      VerticalSpacing(2.h),
+                      Text(
+                        '10',
+                        style: TextStyling.medium.copyWith(
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              HorizontalSpacing(10.w),
+              Expanded(
+                child: Container(
+                  height: 55.h,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.onboardingBgGradient,
+                    borderRadius: BorderRadius.circular(6.r),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Active Bets',
+                        style: TextStyling.medium.copyWith(
+                          fontSize: 10.sp,
+                        ),
+                      ),
+                      VerticalSpacing(2.h),
+                      Text(
+                        '10',
+                        style: TextStyling.medium.copyWith(
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              HorizontalSpacing(10.w),
+              Expanded(
+                child: Container(
+                  height: 55.h,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.onboardingBgGradient,
+                    borderRadius: BorderRadius.circular(6.r),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Last 30 days',
+                        style: TextStyling.medium.copyWith(
+                          fontSize: 10.sp,
+                        ),
+                      ),
+                      VerticalSpacing(2.h),
+                      Text(
+                        '10',
+                        style: TextStyling.medium.copyWith(
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
